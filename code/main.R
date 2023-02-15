@@ -16,10 +16,13 @@ library(sf)
 ################################################################################
 
 # import raw data
-aadt <- read.csv(("data/raw/aadt.csv"))
+aadt <- read.csv(("data/raw/aadt/AADT_Unrounded.csv"))
 
-# sort by start mile point
-aadt <- aadt[order(aadt$START_ACCU), ]
+# sort by start mile point for each route
+aadt <- aadt %>% arrange(ROUTE_NAME, START_ACCU)
+
+# filter data for I-15 only
+aadt <- aadt[aadt$ROUTE_NAME == "0015PM", ]
 
 # function that returns a list of values between start and end mile points
 # 'int' defines the break values in the list
@@ -156,7 +159,7 @@ rm(skid19_int)
 skid_int$Interstate <- 1
 
 # plot interstate data frame
-plot(skid_int)
+# plot(skid_int)
 
 # import non-interstate data from the geodatabase for years 2015 to 2019
 skid15_oth <- st_read("data/raw/skid/skid.gdb",
@@ -242,7 +245,7 @@ rm(skid19_oth)
 skid_oth$Non_Interstate <- 1
 
 # plot interstate data frame
-plot(skid_oth)
+# plot(skid_oth)
 
 # merge interstate and non-interstate data
 skid <- bind_rows(skid_int, skid_oth)
@@ -254,7 +257,7 @@ skid$Interstate[is.na(skid$Interstate)] <- 0
 skid$Non_Interstate <- NULL
 
 # plot skid data
-plot(skid)
+# plot(skid)
 
 # skid data for I-15 for year 2016-2019
 skid <- skid[skid$Route == 15 & skid$YEAR >= 2016 & skid$YEAR <= 2019, ]
@@ -290,9 +293,16 @@ crash <- crash %>%
     RANGE = cut(Milepoint, breaks = bin_breaks, dig.lab = -1),
     YEAR, LABEL
   ) %>%
-  count(RANGE, name = "COUNT")
-rm(bin_breaks)
+  summarize(
+    COUNT_TOT = n(),
+    COUNT_DRY = length(Crash.ID[Roadway.Surface.Condition == "Dry"]),
+    COUNT_WET = length(Crash.ID[Roadway.Surface.Condition != "Dry"]),
+    COUNT_PDO = length(Crash.ID[Crash.Severity == "No injury/PDO"]),
+    COUNT_INJ = length(Crash.ID[Crash.Severity != "No injury/PDO"])
+  )
 
+# remove  bin breaks
+rm(bin_breaks)
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 
@@ -309,7 +319,7 @@ rm(crash)
 # count missing values
 sum(is.na(df$AADT))
 sum(is.na(df$SN))
-sum(is.na(df$COUNT))
+sum(is.na(df$COUNT_TOT))
 
 # remove observations with missing AADT
 df <- df[!is.na(df$AADT), ]
@@ -319,13 +329,13 @@ df <- df %>% arrange(LABEL, YEAR, START)
 df$SN <- na_interpolation(df$SN, option = "linear")
 
 # replace missing count values by 0
-df$COUNT[is.na(df$COUNT)] <- 0
+df <- df %>% mutate(across(starts_with("COUNT_"), ~ ifelse(is.na(.x), 0, .x)))
 
 # calculate length of segments
 df$LENGTH <- df$END - df$START
 
-# crash count per mile
-df$COUNT_MILE <- df$COUNT / df$LENGTH
+# total crash count per mile
+df$COUNT_MILE <- df$COUNT_TOT / df$LENGTH
 
 # correlation between SN and crash count
 cor(df$SN, df$COUNT_MILE)
@@ -341,19 +351,67 @@ plot(df$AADT, df$COUNT_MILE)
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 
-### Crash count model ##########################################################
+### Crash count models #########################################################
 ################################################################################
 
+# total crashes
 # poisson model
-mod <- glm(COUNT ~ SN + log(AADT) + offset(log(LENGTH)),
+mod <- glm(COUNT_TOT ~ SN + log(AADT) + offset(log(LENGTH)),
   data = df,
   family = poisson()
 )
 summary(mod)
 
 # negative binomial model
-mod <- glm.nb(COUNT ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
+mod <- glm.nb(COUNT_TOT ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
 summary(mod)
 
+# dry crashes
+# poisson model
+mod <- glm(COUNT_DRY ~ SN + log(AADT) + offset(log(LENGTH)),
+  data = df,
+  family = poisson()
+)
+summary(mod)
+
+# negative binomial model
+mod <- glm.nb(COUNT_DRY ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
+summary(mod)
+
+# wet crashes
+# poisson model
+mod <- glm(COUNT_WET ~ SN + log(AADT) + offset(log(LENGTH)),
+  data = df,
+  family = poisson()
+)
+summary(mod)
+
+# negative binomial model
+mod <- glm.nb(COUNT_WET ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
+summary(mod)
+
+# PDO crashes
+# poisson model
+mod <- glm(COUNT_PDO ~ SN + log(AADT) + offset(log(LENGTH)),
+  data = df,
+  family = poisson()
+)
+summary(mod)
+
+# negative binomial model
+mod <- glm.nb(COUNT_PDO ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
+summary(mod)
+
+# injury-related/fatal crashes
+# poisson model
+mod <- glm(COUNT_INJ ~ SN + log(AADT) + offset(log(LENGTH)),
+  data = df,
+  family = poisson()
+)
+summary(mod)
+
+# negative binomial model
+mod <- glm.nb(COUNT_INJ ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
+summary(mod)
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
