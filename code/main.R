@@ -1,6 +1,7 @@
-### Load the packages ##########################################################
+### Load the packages and functions ############################################
 ################################################################################
 
+# packages
 library(tidyverse)
 library(purrr)
 library(tidyr)
@@ -8,6 +9,9 @@ library(imputeTS)
 library(MASS)
 library(data.table)
 library(sf)
+
+# load necessary functions - written in a separate script
+source("code/functions.R")
 
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
@@ -22,39 +26,36 @@ aadt <- read.csv(("data/raw/aadt/AADT_Unrounded.csv"))
 aadt <- aadt %>% arrange(ROUTE_NAME, START_ACCU)
 
 # filter data for I-15 only
-aadt <- aadt[aadt$ROUTE_NAME == "0015PM", ]
-
-# function that returns a list of values between start and end mile points
-# 'int' defines the break values in the list
-return_range <- function(start, end, int) {
-  x <- start - start %% int + int
-  y <- end - end %% int
-  if (int <= y - x || y == x) {
-    z <- seq(x, y, by = int)
-  } else {
-    z <- NULL
-  }
-  return(list(c(start, z)))
-}
+aadt <- aadt %>%
+  dplyr::filter(ROUTE_NAME %in% c("0015PM", "0089PM"))
 
 # create a column of new start mile points based on return_range function and
 # explode rows to each start mile points
 aadt <- aadt %>%
+  group_by(ROUTE_NAME) %>%
   rowwise() %>%
   mutate(START = return_range(START_ACCU, END_ACCUM, 0.5)) %>%
   unnest(START)
-rm(return_range)
+# rm(return_range)
 
 # create a column of end miles
-aadt$END <- lead(aadt$START)
-aadt$END[nrow(aadt)] <- aadt$END_ACCUM[nrow(aadt)]
+aadt <- aadt %>%
+  group_by(ROUTE_NAME) %>%
+  mutate(END = ifelse(row_number() == max(row_number()),
+    END_ACCUM, lead(START)
+  )) %>%
+  ungroup()
 
 # join start and end miles
 aadt$RANGE <- as.factor(paste0("(", aadt$START, ",", aadt$END, "]"))
 
 # list of start and end mile points
 # to be used to get other data frames to the same range of mile points
-bin_breaks <- as.list(c(aadt$START, aadt$END[nrow(aadt)]))
+bin_breaks <- aadt %>%
+  group_by(ROUTE_NAME) %>%
+  summarize(BREAKS = paste(sort(unique(c(START, END))), collapse = ", ")) %>%
+  as.list() %>%
+  purrr::transpose()
 
 # keep the required columns only
 aadt <- aadt[, c(
@@ -77,6 +78,7 @@ aadt$YEAR <- as.numeric(gsub("[a-zA-Z]", "", aadt$YEAR))
 
 # duplicate observations for both route directions
 aadt$LABEL[aadt$LABEL == "0015PM"] <- list(c("0015P", "0015N"))
+aadt$LABEL[aadt$LABEL == "0089PM"] <- list(c("0089P", "0089N"))
 aadt <- aadt %>% unnest(LABEL)
 
 #------------------------------------------------------------------------------#
