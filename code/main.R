@@ -16,6 +16,16 @@ source("code/functions.R")
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 
+### Select the routes to be considered in the analysis #########################
+################################################################################
+
+# Both directions to be considered interstates but not for non-interstates 
+# I-15 and US-89
+routes <- c("0015P", "0015N", "0089") 
+
+#------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
+
 ### Prepare AADT data ##########################################################
 ################################################################################
 
@@ -25,22 +35,34 @@ aadt <- read.csv(("data/raw/aadt/AADT_Unrounded.csv"))
 # sort by start mile point for each route
 aadt <- aadt %>% arrange(ROUTE_NAME, START_ACCU)
 
-# filter data for I-15 only
+# rename some columns
+aadt <- aadt %>% rename("LABEL" = "ROUTE_NAME")
+
+# for interstates: use directional AADT (i.e., total/2)
 aadt <- aadt %>%
-  dplyr::filter(ROUTE_NAME %in% c("0015PM", "0089PM"))
+  mutate(across(contains("AADT"), ~if_else(LABEL == "0015PM", ./2, ./1)))
+aadt$LABEL[aadt$LABEL == "0015PM"] <- list(c("0015P", "0015N"))
+aadt <- aadt %>% unnest(LABEL)
+
+# for non-interstates: keep total AADT
+aadt$LABEL[aadt$LABEL == "0089PM"] <- "0089"
+
+# filter data for I-15 and US-89 only
+aadt <- aadt %>%
+  dplyr::filter(LABEL %in% routes)
 
 # create a column of new start mile points based on return_range function and
 # explode rows to each start mile points
 aadt <- aadt %>%
-  group_by(ROUTE_NAME) %>%
+  group_by(LABEL) %>%
   rowwise() %>%
   mutate(START = return_range(START_ACCU, END_ACCUM, 0.5)) %>%
   unnest(START)
-# rm(return_range)
+rm(return_range)
 
 # create a column of end miles
 aadt <- aadt %>%
-  group_by(ROUTE_NAME) %>%
+  group_by(LABEL) %>%
   mutate(END = ifelse(row_number() == max(row_number()),
     END_ACCUM, lead(START)
   )) %>%
@@ -52,34 +74,27 @@ aadt$RANGE <- as.factor(paste0("(", aadt$START, ",", aadt$END, "]"))
 # list of start and end mile points
 # to be used to get other data frames to the same range of mile points
 bin_breaks <- aadt %>%
-  group_by(ROUTE_NAME) %>%
-  summarize(BREAKS = paste(sort(unique(c(START, END))), collapse = ", ")) %>%
-  as.list() %>%
-  purrr::transpose()
-
+  group_by(LABEL) %>%
+  summarize(BREAKS = as.list(sort(unique(c(START, END))), collapse = ", ")) 
+bin_breaks <- as.list(unstack(bin_breaks, BREAKS~LABEL))
+  
 # keep the required columns only
 aadt <- aadt[, c(
-  "ROUTE_NAME", "AADT2019", "AADT2018", "AADT2017",
+  "LABEL", "AADT2019", "AADT2018", "AADT2017",
   "AADT2016", "START", "END", "RANGE"
 )]
 
 # convert aadt of different years to long format
 aadt <- melt(setDT(aadt),
-  id.vars = c("ROUTE_NAME", "START", "END", "RANGE"),
+  id.vars = c("LABEL", "START", "END", "RANGE"),
   variable.name = c("YEAR")
 )
 
 # rename some columns
 aadt <- aadt %>% rename("AADT" = "value")
-aadt <- aadt %>% rename("LABEL" = "ROUTE_NAME")
 
 # reformat YEAR column to numeric
 aadt$YEAR <- as.numeric(gsub("[a-zA-Z]", "", aadt$YEAR))
-
-# duplicate observations for both route directions
-aadt$LABEL[aadt$LABEL == "0015PM"] <- list(c("0015P", "0015N"))
-aadt$LABEL[aadt$LABEL == "0089PM"] <- list(c("0089P", "0089N"))
-aadt <- aadt %>% unnest(LABEL)
 
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
@@ -232,7 +247,7 @@ skid17_oth$Field10 <- NULL
 skid18_oth$Collection_Date <- NULL
 skid19_oth$Collection <- NULL
 
-# bin all interstate data frames
+# bind all interstate data frames
 skid_oth <- bind_rows(
   skid15_oth, skid16_oth, skid17_oth, skid18_oth,
   skid19_oth
@@ -261,17 +276,30 @@ skid$Non_Interstate <- NULL
 # plot skid data
 # plot(skid)
 
-# skid data for I-15 for year 2016-2019
-skid <- skid[skid$Route == 15 & skid$YEAR >= 2016 & skid$YEAR <= 2019, ]
+# for non-interstates: aggregate the observations of both direction
+skid$LABEL[skid$LABEL == "0089P" | skid$LABEL == "0089N"] <- "0089"
+
+# skid data for selected routes for year 2016-2019
+skid <- skid %>%
+  dplyr::filter(LABEL %in% routes) %>%
+  dplyr::filter(YEAR >= 2016 & YEAR <= 2020)
 skid <- data.frame(skid)
 
-# aggregate skid number to required range of mile points
-skid <- skid %>%
+# aggregate skid number to required range of mile points for all routes
+for (i in 1:length(routes)) {
+skid1 <- skid[skid$LABEL == routes[i],] %>%
   group_by(
-    RANGE = cut(Mile, breaks = bin_breaks, dig.lab = -1),
+    RANGE = cut(Mile, breaks = bin_breaks[[routes[i]]], dig.lab = -1),
     YEAR, LABEL
   ) %>%
   summarize(SN = mean(SN_40))
+if (i == 1) {skid2 <- skid1} 
+  else {skid2 <- rbind(skid2, skid1)}
+}
+skid <- skid2
+rm(i)
+rm(skid1)
+rm(skid2)
 
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
@@ -286,29 +314,46 @@ crash <- read.csv(("data/raw/crash/Crashes_2016_2019.csv"))
 crash <- crash %>% rename("LABEL" = "Full.Route.Name")
 crash <- crash %>% rename("YEAR" = "Year")
 
-# crash data for I-15 only
-crash <- crash[crash$LABEL == "0015P" | crash$LABEL == "0015N", ]
+# # extract route number from label
+# crash$RT_NUM <- str_extract_all(crash$LABEL, "\\d+")
+
+# for non-interstates: aggregate the observations of both direction
+crash$LABEL[crash$LABEL == "0089P" | crash$LABEL == "0089N"] <- "0089"
+
+# crash data for selected routes for years 2016-2020
+crash <- crash %>%
+  dplyr::filter(LABEL %in% routes) %>%
+  dplyr::filter(YEAR >= 2016 & YEAR <= 2020)
 
 # aggregate to required range of mile points
-crash <- crash %>%
-  group_by(
-    RANGE = cut(Milepoint, breaks = bin_breaks, dig.lab = -1),
-    YEAR, LABEL
-  ) %>%
-  summarize(
-    COUNT_TOT = n(),
-    COUNT_DRY = length(Crash.ID[Roadway.Surface.Condition == "Dry"]),
-    COUNT_WET = length(Crash.ID[Roadway.Surface.Condition != "Dry"]),
-    COUNT_PDO = length(Crash.ID[Crash.Severity == "No injury/PDO"]),
-    COUNT_INJ = length(Crash.ID[Crash.Severity != "No injury/PDO"])
-  )
+for (i in 1:length(routes)) {
+  crash1 <- crash[crash$LABEL == routes[i],] %>%
+    group_by(
+      RANGE = cut(Milepoint, breaks = bin_breaks[[routes[i]]], dig.lab = -1),
+      YEAR, LABEL
+    ) %>%
+    summarize(
+      COUNT_TOT = n(),
+      COUNT_DRY = length(Crash.ID[Roadway.Surface.Condition == "Dry"]),
+      COUNT_WET = length(Crash.ID[Roadway.Surface.Condition != "Dry"]),
+      COUNT_PDO = length(Crash.ID[Crash.Severity == "No injury/PDO"]),
+      COUNT_INJ = length(Crash.ID[Crash.Severity != "No injury/PDO"])
+    )
+  if (i == 1) {crash2 <- crash1} 
+  else {crash2 <- rbind(crash2, crash1)}
+}
+rm(i)
+crash <- crash2
+rm(crash1)
+rm(crash2)
 
 # remove  bin breaks
 rm(bin_breaks)
+
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 
-### Join all data sets and visualize it ########################################
+### Join all data sets #########################################################
 ################################################################################
 
 # join all data sets
@@ -318,13 +363,13 @@ rm(aadt)
 rm(skid)
 rm(crash)
 
+# remove observations with missing AADT
+df <- df[!is.na(df$AADT), ]
+
 # count missing values
 sum(is.na(df$AADT))
 sum(is.na(df$SN))
 sum(is.na(df$COUNT_TOT))
-
-# remove observations with missing AADT
-df <- df[!is.na(df$AADT), ]
 
 # impute missing SN values by linear interpolation
 df <- df %>% arrange(LABEL, YEAR, START)
@@ -339,17 +384,32 @@ df$LENGTH <- df$END - df$START
 # total crash count per mile
 df$COUNT_MILE <- df$COUNT_TOT / df$LENGTH
 
+#------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
+
+### Some visualizations ########################################################
+################################################################################
+
+# select route
+df1 <- df
+df <- df1[df1$LABEL != "0089",]
+
 # correlation between SN and crash count
 cor(df$SN, df$COUNT_MILE)
 plot(df$SN, df$COUNT_MILE)
+abline(lm(df$COUNT_MILE ~ df$SN), col = 4, lwd = 3)
 
 # correlation between SN and AADT
 cor(df$SN, df$AADT)
 plot(df$SN, df$AADT)
+abline(lm(df$AADT ~ df$SN), col = 4, lwd = 3)
+
 
 # correlation between AADT and crash count
 cor(df$AADT, df$COUNT_MILE)
 plot(df$AADT, df$COUNT_MILE)
+abline(lm(df$COUNT_MILE ~ df$AADT), col = 4, lwd = 3)
+
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 
@@ -358,62 +418,102 @@ plot(df$AADT, df$COUNT_MILE)
 
 # total crashes
 # poisson model
-mod <- glm(COUNT_TOT ~ SN + log(AADT) + offset(log(LENGTH)),
-  data = df,
-  family = poisson()
+poi_tot <- glm(COUNT_TOT ~ SN + log(AADT) + offset(log(LENGTH)),
+               data = df,
+               family = poisson()
 )
-summary(mod)
+summary(poi_tot)
 
 # negative binomial model
-mod <- glm.nb(COUNT_TOT ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
-summary(mod)
+nb_tot <- glm.nb(COUNT_TOT ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
+summary(nb_tot)
 
 # dry crashes
 # poisson model
-mod <- glm(COUNT_DRY ~ SN + log(AADT) + offset(log(LENGTH)),
-  data = df,
-  family = poisson()
+poi_dry <- glm(COUNT_DRY ~ SN + log(AADT) + offset(log(LENGTH)),
+               data = df,
+               family = poisson()
 )
-summary(mod)
+summary(poi_dry)
 
 # negative binomial model
-mod <- glm.nb(COUNT_DRY ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
-summary(mod)
+nb_dry <- glm.nb(COUNT_DRY ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
+summary(nb_dry)
 
 # wet crashes
 # poisson model
-mod <- glm(COUNT_WET ~ SN + log(AADT) + offset(log(LENGTH)),
-  data = df,
-  family = poisson()
+poi_wet <- glm(COUNT_WET ~ SN + log(AADT) + offset(log(LENGTH)),
+               data = df,
+               family = poisson()
 )
-summary(mod)
+summary(poi_wet)
 
 # negative binomial model
-mod <- glm.nb(COUNT_WET ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
-summary(mod)
+nb_wet <- glm.nb(COUNT_WET ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
+summary(nb_wet)
 
 # PDO crashes
 # poisson model
-mod <- glm(COUNT_PDO ~ SN + log(AADT) + offset(log(LENGTH)),
-  data = df,
-  family = poisson()
+poi_pdo <- glm(COUNT_PDO ~ SN + log(AADT) + offset(log(LENGTH)),
+               data = df,
+               family = poisson()
 )
-summary(mod)
+summary(poi_pdo)
 
 # negative binomial model
-mod <- glm.nb(COUNT_PDO ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
-summary(mod)
+nb_pdo <- glm.nb(COUNT_PDO ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
+summary(nb_pdo)
 
 # injury-related/fatal crashes
 # poisson model
-mod <- glm(COUNT_INJ ~ SN + log(AADT) + offset(log(LENGTH)),
-  data = df,
-  family = poisson()
+poi_inj <- glm(COUNT_INJ ~ SN + log(AADT) + offset(log(LENGTH)),
+               data = df,
+               family = poisson()
 )
-summary(mod)
+summary(poi_inj)
 
 # negative binomial model
-mod <- glm.nb(COUNT_INJ ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
-summary(mod)
+nb_inj <- glm.nb(COUNT_INJ ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
+summary(nb_inj)
+
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
+
+### Crash modification factors #################################################
+################################################################################
+
+# define function that returns CMF
+return_cmf <- function(beta, test, base) exp(beta*(test-base))
+
+# create a dataframe of CMF for different crash types
+cmf <- data.frame(test_SN = seq(0, 100, 1), base_SN = 40)
+cmf <- cmf %>% 
+  mutate(tot = return_cmf(nb_tot[["coefficients"]][["SN"]],test_SN, base_SN),
+         dry = return_cmf(nb_dry[["coefficients"]][["SN"]],test_SN, base_SN),
+         wet = return_cmf(nb_wet[["coefficients"]][["SN"]],test_SN, base_SN),
+         pdo = return_cmf(nb_pdo[["coefficients"]][["SN"]],test_SN, base_SN),
+         inj = return_cmf(nb_inj[["coefficients"]][["SN"]],test_SN, base_SN))
+
+# convert dataframe to long format
+cmf <- melt(setDT(cmf), id.vars = c("test_SN", "base_SN"), variable.name = "cmf")
+cmf <- cmf %>% rename("crash_type" = "cmf", "cmf" = "value")
+
+# plot
+ggplot(cmf, aes(col = crash_type)) +
+  geom_point(aes(test_SN, cmf)) +
+  scale_color_brewer(palette = "RdYlBu") + 
+  xlab("SN (base = 40)") + 
+  ylab("CMF") +
+  ggtitle("Skid number crash modification factors for different crash types") +
+  scale_x_continuous(limits = c(0, 100), breaks = seq(0, 100, 10)) +
+  scale_y_continuous(limits = c(0.2, 2.8), breaks = seq(0.2, 2.8, 0.2)) +
+  theme(
+    panel.border = element_rect(colour = "black", fill = NA, size = 0.25),
+    panel.background = element_rect(fill = "grey90"),
+    plot.background = element_rect(fill = "white"),
+    panel.grid.minor = element_blank()
+  )
+
+#------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
+
