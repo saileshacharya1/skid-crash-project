@@ -195,7 +195,7 @@ skid19_oth <- st_read("data/raw/skid/skid.gdb",
   layer = "Skid2019_NonInterstate"
 )
 
-# bring interstate data frames to same format
+# bring non-interstate data frames to same format
 # year
 skid15_oth <- skid15_oth %>% rename("YEAR" = "Year_")
 skid16_oth <- skid16_oth %>% rename("YEAR" = "Year_")
@@ -541,3 +541,4 @@ ggplot(cmf, aes(col = crash_type)) +
 
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
+
