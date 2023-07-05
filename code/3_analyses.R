@@ -23,7 +23,7 @@ df <- readRDS("./data/processed/prepared_data.rds")
 ### Crash count models - combined for interstates and non-interstates ##########
 ################################################################################
 
-# total crashes
+## total crashes--------
 # poisson model
 poi_tot <- glm(COUNT_TOT ~ SN + log(AADT) + offset(log(LENGTH)),
   data = df,
@@ -37,8 +37,10 @@ print(summary(poi_tot))
 nb_tot <- glm.nb(COUNT_TOT ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
 sink("./outputs/models/2.nb_tot.txt")
 print(summary(nb_tot))
+## --------
 
-# dry crashes
+
+## dry crashes--------
 # poisson model
 poi_dry <- glm(COUNT_DRY ~ SN + log(AADT) + offset(log(LENGTH)),
   data = df,
@@ -51,8 +53,10 @@ print(summary(poi_dry))
 nb_dry <- glm.nb(COUNT_DRY ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
 sink("./outputs/models/4.nb_dry.txt")
 print(summary(nb_dry))
+## --------
 
-# wet crashes
+
+## wet crashes--------
 # poisson model
 poi_wet <- glm(COUNT_WET ~ SN + log(AADT) + offset(log(LENGTH)),
   data = df,
@@ -65,8 +69,10 @@ print(summary(poi_wet))
 nb_wet <- glm.nb(COUNT_WET ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
 sink("./outputs/models/6.nb_wet.txt")
 print(summary(nb_wet))
+## --------
 
-# PDO crashes
+
+## PDO crashes--------
 # poisson model
 poi_pdo <- glm(COUNT_PDO ~ SN + log(AADT) + offset(log(LENGTH)),
   data = df,
@@ -79,8 +85,10 @@ print(summary(poi_pdo))
 nb_pdo <- glm.nb(COUNT_PDO ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
 sink("./outputs/models/8.nb_pdo.txt")
 print(summary(nb_pdo))
+## --------
 
-# injury-related/fatal crashes
+
+## injury-related/fatal crashes--------
 # poisson model
 poi_inj <- glm(COUNT_INJ ~ SN + log(AADT) + offset(log(LENGTH)),
   data = df,
@@ -94,6 +102,7 @@ nb_inj <- glm.nb(COUNT_INJ ~ SN + log(AADT) + offset(log(LENGTH)), data = df)
 sink("./outputs/models/10.nb_inj.txt")
 print(summary(nb_inj))
 closeAllConnections()
+## --------
 
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
@@ -108,31 +117,36 @@ df_15 <- df[df$LABEL == "0015N" | df$LABEL == "0015P", ]
 
 # total crashes
 int_tot <- glm.nb(COUNT_TOT ~ SN + log(AADT) + offset(log(LENGTH)),
-  data = df_15)
+  data = df_15
+)
 sink("./outputs/models/11.int_tot.txt")
 print(summary(int_tot))
 
 # dry crashes
-int_dry <- glm.nb(COUNT_DRY ~ SN + log(AADT) + offset(log(LENGTH)), 
-  data = df_15)
+int_dry <- glm.nb(COUNT_DRY ~ SN + log(AADT) + offset(log(LENGTH)),
+  data = df_15
+)
 sink("./outputs/models/12.int_dry.txt")
 print(summary(int_dry))
 
 # wet crashes
-int_wet <- glm.nb(COUNT_WET ~ SN + log(AADT) + offset(log(LENGTH)), 
-  data = df_15)
+int_wet <- glm.nb(COUNT_WET ~ SN + log(AADT) + offset(log(LENGTH)),
+  data = df_15
+)
 sink("./outputs/models/13.int_wet.txt")
 print(summary(int_wet))
 
 # PDO crashes
-int_pdo <- glm.nb(COUNT_PDO ~ SN + log(AADT) + offset(log(LENGTH)), 
-  data = df_15)
+int_pdo <- glm.nb(COUNT_PDO ~ SN + log(AADT) + offset(log(LENGTH)),
+  data = df_15
+)
 sink("./outputs/models/14.int_pdo.txt")
 print(summary(int_pdo))
 
 # injury-related/fatal crashes
-int_inj <- glm.nb(COUNT_INJ ~ SN + log(AADT) + offset(log(LENGTH)), 
-  data = df_15)
+int_inj <- glm.nb(COUNT_INJ ~ SN + log(AADT) + offset(log(LENGTH)),
+  data = df_15
+)
 sink("./outputs/models/15.int_inj.txt")
 print(summary(int_inj))
 closeAllConnections()
@@ -149,32 +163,37 @@ closeAllConnections()
 df_89 <- df[df$LABEL == "0089", ]
 
 # total crashes
-non_tot <- glm.nb(COUNT_TOT ~ SN + log(AADT) + offset(log(LENGTH)), 
-  data = df_89)
+non_tot <- glm.nb(COUNT_TOT ~ SN + log(AADT) + offset(log(LENGTH)),
+  data = df_89
+)
 sink("./outputs/models/16.non_tot.txt")
 print(summary(non_tot))
 
 # dry crashes
-non_dry <- glm.nb(COUNT_DRY ~ SN + log(AADT) + offset(log(LENGTH)), 
-  data = df_89)
+non_dry <- glm.nb(COUNT_DRY ~ SN + log(AADT) + offset(log(LENGTH)),
+  data = df_89
+)
 sink("./outputs/models/17.non_dry.txt")
 print(summary(int_dry))
 
 # wet crashes
-non_wet <- glm.nb(COUNT_WET ~ SN + log(AADT) + offset(log(LENGTH)), 
-  data = df_89)
+non_wet <- glm.nb(COUNT_WET ~ SN + log(AADT) + offset(log(LENGTH)),
+  data = df_89
+)
 sink("./outputs/models/18.non_wet.txt")
 print(summary(non_wet))
 
 # PDO crashes
-non_pdo <- glm.nb(COUNT_PDO ~ SN + log(AADT) + offset(log(LENGTH)), 
-  data = df_89)
+non_pdo <- glm.nb(COUNT_PDO ~ SN + log(AADT) + offset(log(LENGTH)),
+  data = df_89
+)
 sink("./outputs/models/19.non_pdo.txt")
 print(summary(non_pdo))
 
 # injury-related/fatal crashes
-non_inj <- glm.nb(COUNT_INJ ~ SN + log(AADT) + offset(log(LENGTH)), 
-  data = df_89)
+non_inj <- glm.nb(COUNT_INJ ~ SN + log(AADT) + offset(log(LENGTH)),
+  data = df_89
+)
 sink("./outputs/models/20.non_inj.txt")
 print(summary(non_inj))
 closeAllConnections()
@@ -198,8 +217,10 @@ cmf <- cmf %>%
   )
 
 # convert dataframe to long format
-cmf <- melt(setDT(cmf), id.vars = c("test_SN", "base_SN"),
-  variable.name = "cmf")
+cmf <- melt(setDT(cmf),
+  id.vars = c("test_SN", "base_SN"),
+  variable.name = "cmf"
+)
 cmf <- cmf %>% rename("crash_type" = "cmf", "cmf" = "value")
 
 # plot
@@ -242,8 +263,10 @@ cmf <- cmf %>%
   )
 
 # convert dataframe to long format
-cmf <- melt(setDT(cmf), id.vars = c("test_SN", "base_SN"),
-  variable.name = "cmf")
+cmf <- melt(setDT(cmf),
+  id.vars = c("test_SN", "base_SN"),
+  variable.name = "cmf"
+)
 cmf <- cmf %>% rename("crash_type" = "cmf", "cmf" = "value")
 
 # plot
@@ -286,8 +309,10 @@ cmf <- cmf %>%
   )
 
 # convert dataframe to long format
-cmf <- melt(setDT(cmf), id.vars = c("test_SN", "base_SN"),
-  variable.name = "cmf")
+cmf <- melt(setDT(cmf),
+  id.vars = c("test_SN", "base_SN"),
+  variable.name = "cmf"
+)
 cmf <- cmf %>% rename("crash_type" = "cmf", "cmf" = "value")
 
 # plot
