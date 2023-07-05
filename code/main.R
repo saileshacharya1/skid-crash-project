@@ -19,8 +19,8 @@ source("code/functions.R")
 ### Select the routes to be considered in the analysis #########################
 ################################################################################
 
-# Both directions to be considered interstates but not for non-interstates 
-# I-15 and US-89
+# Both directions to be considered for interstates but not for non-interstates 
+# I-15 (interstate) and US-89 (non-interstate)
 routes <- c("0015P", "0015N", "0089") 
 
 #------------------------------------------------------------------------------#
