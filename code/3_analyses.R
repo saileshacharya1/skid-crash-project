@@ -321,7 +321,7 @@ cmf <- ggplot(cmf, aes(col = crash_type)) +
   scale_color_brewer(palette = "RdYlBu") +
   xlab("SN (base = 40)") +
   ylab("CMF") +
-  ggtitle("Skid number CMF for interstates") +
+  ggtitle("Skid number CMF for non-interstates") +
   scale_x_continuous(limits = c(0, 100), breaks = seq(0, 100, 10)) +
   scale_y_continuous(limits = c(0.2, 2.8), breaks = seq(0.2, 2.8, 0.2)) +
   theme(
