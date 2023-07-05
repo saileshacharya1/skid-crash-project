@@ -1,4 +1,4 @@
-### Load packages and import prepared data #####################################
+### Load packages/functions and import prepared da##############################
 ################################################################################
 
 # load packages
@@ -9,6 +9,9 @@ library(imputeTS)
 library(MASS)
 library(data.table)
 library(sf)
+
+# load necessary functions - written in a separate script
+source("code/1_utils.R")
 
 # import prepared data
 df <- readRDS("./data/processed/prepared_data.rds")
