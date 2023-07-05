@@ -11,7 +11,7 @@ library(data.table)
 library(sf)
 
 # load necessary functions - written in a separate script
-source("code/functions.R")
+source("code/1_utils.R")
 
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
@@ -503,9 +503,6 @@ summary(nb_inj)
 
 ### Crash modification factors #################################################
 ################################################################################
-
-# define function that returns CMF
-return_cmf <- function(beta, test, base) exp(beta * (test - base))
 
 # create a dataframe of CMF for different crash types
 cmf <- data.frame(test_SN = seq(0, 100, 1), base_SN = 40)
