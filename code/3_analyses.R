@@ -1,3 +1,21 @@
+### Load packages and import prepared data #####################################
+################################################################################
+
+# load packages
+library(tidyverse)
+library(purrr)
+library(tidyr)
+library(imputeTS)
+library(MASS)
+library(data.table)
+library(sf)
+
+# import prepared data
+df <- readRDS("./data/processed/prepared_data.rds")
+
+#------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
+
 ### Crash count models #########################################################
 ################################################################################
 
