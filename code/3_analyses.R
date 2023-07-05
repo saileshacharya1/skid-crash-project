@@ -252,8 +252,8 @@ ggsave(
 ################################################################################
 
 # create a dataframe of CMF for different crash types
-cmf <- data.frame(test_SN = seq(0, 100, 1), base_SN = 40)
-cmf <- cmf %>%
+cmf_int <- data.frame(test_SN = seq(0, 100, 1), base_SN = 40)
+cmf_int <- cmf_int %>%
   mutate(
     tot = return_cmf(int_tot[["coefficients"]][["SN"]], test_SN, base_SN),
     dry = return_cmf(int_dry[["coefficients"]][["SN"]], test_SN, base_SN),
@@ -263,14 +263,14 @@ cmf <- cmf %>%
   )
 
 # convert dataframe to long format
-cmf <- melt(setDT(cmf),
+cmf_int <- melt(setDT(cmf_int),
   id.vars = c("test_SN", "base_SN"),
   variable.name = "cmf"
 )
-cmf <- cmf %>% rename("crash_type" = "cmf", "cmf" = "value")
+cmf_int <- cmf_int %>% rename("crash_type" = "cmf", "cmf" = "value")
 
 # plot
-cmf <- ggplot(cmf, aes(col = crash_type)) +
+cmf_int <- ggplot(cmf_int, aes(col = crash_type)) +
   geom_point(aes(test_SN, cmf)) +
   scale_color_brewer(palette = "RdYlBu") +
   xlab("SN (base = 40)") +
@@ -288,7 +288,7 @@ cmf <- ggplot(cmf, aes(col = crash_type)) +
 # save the plot
 ggsave(
   filename = "./outputs/plots/2.cmf_interstates.jpeg",
-  plot = cmf, width = 6.5, height = 8.5, unit = "in", dpi = 1000
+  plot = cmf_int, width = 6.5, height = 8.5, unit = "in", dpi = 1000
 )
 
 #------------------------------------------------------------------------------#
@@ -298,8 +298,8 @@ ggsave(
 ################################################################################
 
 # create a dataframe of CMF for different crash types
-cmf <- data.frame(test_SN = seq(0, 100, 1), base_SN = 40)
-cmf <- cmf %>%
+cmf_non <- data.frame(test_SN = seq(0, 100, 1), base_SN = 40)
+cmf_non <- cmf_non %>%
   mutate(
     tot = return_cmf(non_tot[["coefficients"]][["SN"]], test_SN, base_SN),
     dry = return_cmf(non_dry[["coefficients"]][["SN"]], test_SN, base_SN),
@@ -309,14 +309,14 @@ cmf <- cmf %>%
   )
 
 # convert dataframe to long format
-cmf <- melt(setDT(cmf),
+cmf_non <- melt(setDT(cmf_non),
   id.vars = c("test_SN", "base_SN"),
   variable.name = "cmf"
 )
-cmf <- cmf %>% rename("crash_type" = "cmf", "cmf" = "value")
+cmf_non <- cmf_non %>% rename("crash_type" = "cmf", "cmf" = "value")
 
 # plot
-cmf <- ggplot(cmf, aes(col = crash_type)) +
+cmf_non <- ggplot(cmf_non, aes(col = crash_type)) +
   geom_point(aes(test_SN, cmf)) +
   scale_color_brewer(palette = "RdYlBu") +
   xlab("SN (base = 40)") +
@@ -334,7 +334,7 @@ cmf <- ggplot(cmf, aes(col = crash_type)) +
 # save the plot
 ggsave(
   filename = "./outputs/plots/3.cmf_non_interstates.jpeg",
-  plot = cmf, width = 6.5, height = 8.5, unit = "in", dpi = 1000
+  plot = cmf_non, width = 6.5, height = 8.5, unit = "in", dpi = 1000
 )
 
 #------------------------------------------------------------------------------#
