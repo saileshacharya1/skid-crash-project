@@ -410,19 +410,13 @@ df %>%
 # crash summary
 df %>%
   group_by(LABEL, YEAR) %>%
-  summarize(sum = sum(COUNT_DRY))
-df %>%
-  group_by(LABEL, YEAR) %>%
-  summarize(sum = sum(COUNT_WET))
-df %>%
-  group_by(LABEL, YEAR) %>%
-  summarize(sum = sum(COUNT_PDO))
-df %>%
-  group_by(LABEL, YEAR) %>%
-  summarize(sum = sum(COUNT_INJ))
-df %>%
-  group_by(LABEL, YEAR) %>%
-  summarize(sum = sum(COUNT_TOT))
+  summarize(
+    dry = sum(COUNT_DRY),
+    wet = sum(COUNT_WET),
+    pdo = sum(COUNT_PDO),
+    inj = sum(COUNT_INJ),
+    tot = sum(COUNT_TOT),
+  )
 
 # skid summary
 df %>%
