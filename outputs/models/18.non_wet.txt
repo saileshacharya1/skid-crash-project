@@ -1,30 +1,30 @@
 
 Call:
 glm.nb(formula = COUNT_WET ~ SN + log(AADT) + offset(log(LENGTH)), 
-    data = df_89, init.theta = 1.148514463, link = log)
+    data = df_89, init.theta = 1.4759207, link = log)
 
 Deviance Residuals: 
     Min       1Q   Median       3Q      Max  
--3.0780  -0.6251  -0.4732  -0.2370   5.1576  
+-2.2330  -0.6375  -0.4824  -0.2380   5.3747  
 
 Coefficients:
              Estimate Std. Error z value Pr(>|z|)    
-(Intercept) -10.02204    0.34668 -28.909  < 2e-16 ***
-SN           -0.01749    0.00313  -5.589 2.28e-08 ***
-log(AADT)     1.22162    0.02946  41.472  < 2e-16 ***
+(Intercept) -9.804341   0.334848 -29.280  < 2e-16 ***
+SN          -0.018109   0.002976  -6.086 1.16e-09 ***
+log(AADT)    1.203308   0.028388  42.388  < 2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-(Dispersion parameter for Negative Binomial(1.1485) family taken to be 1)
+(Dispersion parameter for Negative Binomial(1.4759) family taken to be 1)
 
-    Null deviance: 5055.0  on 3991  degrees of freedom
-Residual deviance: 2629.5  on 3989  degrees of freedom
-AIC: 6417.5
+    Null deviance: 5281.9  on 3971  degrees of freedom
+Residual deviance: 2691.9  on 3969  degrees of freedom
+AIC: 6288.9
 
 Number of Fisher Scoring iterations: 1
 
 
-              Theta:  1.1485 
-          Std. Err.:  0.0870 
+              Theta:  1.476 
+          Std. Err.:  0.133 
 
- 2 x log-likelihood:  -6409.5170 
+ 2 x log-likelihood:  -6280.894 

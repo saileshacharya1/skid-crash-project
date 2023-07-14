@@ -5,21 +5,21 @@ glm(formula = COUNT_WET ~ SN + log(AADT) + offset(log(LENGTH)),
 
 Deviance Residuals: 
     Min       1Q   Median       3Q      Max  
--9.9186  -0.9725  -0.5791   0.3789   8.5114  
+-4.2078  -1.0020  -0.6121   0.3382   8.3784  
 
 Coefficients:
              Estimate Std. Error z value Pr(>|z|)    
-(Intercept) -7.793850   0.132701  -58.73   <2e-16 ***
-SN          -0.019012   0.001153  -16.48   <2e-16 ***
-log(AADT)    0.963864   0.009613  100.27   <2e-16 ***
+(Intercept) -7.188009   0.135176  -53.17   <2e-16 ***
+SN          -0.021671   0.001163  -18.63   <2e-16 ***
+log(AADT)    0.922326   0.009700   95.09   <2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 (Dispersion parameter for poisson family taken to be 1)
 
-    Null deviance: 30951  on 11415  degrees of freedom
-Residual deviance: 16445  on 11413  degrees of freedom
-AIC: 27938
+    Null deviance: 29369  on 11387  degrees of freedom
+Residual deviance: 15732  on 11385  degrees of freedom
+AIC: 27182
 
 Number of Fisher Scoring iterations: 6
 

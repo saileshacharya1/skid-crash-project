@@ -4,22 +4,22 @@ glm(formula = COUNT_DRY ~ SN + log(AADT) + offset(log(LENGTH)),
     family = poisson(), data = df)
 
 Deviance Residuals: 
-     Min        1Q    Median        3Q       Max  
--17.8429   -1.4418   -0.6185    0.5617   11.4623  
+    Min       1Q   Median       3Q      Max  
+-6.0583  -1.4969  -0.6711   0.4817  11.3927  
 
 Coefficients:
-              Estimate Std. Error z value Pr(>|z|)    
-(Intercept) -7.3768794  0.0754467  -97.78   <2e-16 ***
-SN          -0.0274377  0.0006352  -43.20   <2e-16 ***
-log(AADT)    1.0779121  0.0055346  194.76   <2e-16 ***
+             Estimate Std. Error z value Pr(>|z|)    
+(Intercept) -6.773787   0.076756  -88.25   <2e-16 ***
+SN          -0.029733   0.000640  -46.46   <2e-16 ***
+log(AADT)    1.034726   0.005585  185.28   <2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 (Dispersion parameter for poisson family taken to be 1)
 
-    Null deviance: 101102  on 11415  degrees of freedom
-Residual deviance:  40694  on 11413  degrees of freedom
-AIC: 60904
+    Null deviance: 95803  on 11387  degrees of freedom
+Residual deviance: 38689  on 11385  degrees of freedom
+AIC: 58821
 
 Number of Fisher Scoring iterations: 6
 
