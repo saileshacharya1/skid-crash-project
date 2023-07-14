@@ -393,9 +393,44 @@ df$COUNT_MILE <- df$COUNT_TOT / df$LENGTH
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 
-### Export the prepared data ###################################################
+### Summarize and export the prepared data #####################################
 ################################################################################
 
+# AADT summary
+df %>% 
+  group_by(LABEL) %>% 
+  summarize(mean = mean(AADT), min = min(AADT), max = max(AADT))
+df %>% 
+  group_by(LABEL, YEAR) %>% 
+  summarize(mean = mean(AADT), min = min(AADT), max = max(AADT))
+
+# crash summary
+df %>% group_by(LABEL, YEAR) %>% summarize(sum = sum(COUNT_DRY))
+
+# skid summary
+df %>% 
+  group_by(LABEL) %>% 
+  summarize(mean = mean(SN), min = min(SN), max = max(SN))
+df %>% 
+  group_by(LABEL, YEAR) %>% 
+  summarize(mean = mean(SN), min = min(SN), max = max(SN))
+
+# count of segments
+df %>%
+  group_by(LABEL) %>% 
+  summarize(n())
+
+# segment length
+df %>% 
+  group_by(LABEL) %>% 
+  summarize(mean = mean(LENGTH), min = min(LENGTH), max = max(LENGTH))
+
+# total length 
+df %>% 
+  group_by(LABEL) %>% 
+  summarize(max = max(END))
+
+# export prepared data
 write_rds(df, "./data/processed/prepared_data.rds")
 
 #------------------------------------------------------------------------------#
