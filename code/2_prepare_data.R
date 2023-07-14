@@ -369,8 +369,14 @@ rm(aadt)
 rm(skid)
 rm(crash)
 
+# calculate length of segments
+df$LENGTH <- df$END - df$START
+
 # remove observations with missing AADT
 df <- df[!is.na(df$AADT), ]
+
+# remove rows where US-89 and I-15 are the same
+df <- df[df$LENGTH <= 0.5, ]
 
 # count missing values
 sum(is.na(df$AADT))
@@ -384,9 +390,6 @@ df$SN <- na_interpolation(df$SN, option = "linear")
 # replace missing count values by 0
 df <- df %>% mutate(across(starts_with("COUNT_"), ~ ifelse(is.na(.x), 0, .x)))
 
-# calculate length of segments
-df$LENGTH <- df$END - df$START
-
 # total crash count per mile
 df$COUNT_MILE <- df$COUNT_TOT / df$LENGTH
 
@@ -397,37 +400,51 @@ df$COUNT_MILE <- df$COUNT_TOT / df$LENGTH
 ################################################################################
 
 # AADT summary
-df %>% 
-  group_by(LABEL) %>% 
+df %>%
+  group_by(LABEL) %>%
   summarize(mean = mean(AADT), min = min(AADT), max = max(AADT))
-df %>% 
-  group_by(LABEL, YEAR) %>% 
+df %>%
+  group_by(LABEL, YEAR) %>%
   summarize(mean = mean(AADT), min = min(AADT), max = max(AADT))
 
 # crash summary
-df %>% group_by(LABEL, YEAR) %>% summarize(sum = sum(COUNT_DRY))
+df %>%
+  group_by(LABEL, YEAR) %>%
+  summarize(sum = sum(COUNT_DRY))
+df %>%
+  group_by(LABEL, YEAR) %>%
+  summarize(sum = sum(COUNT_WET))
+df %>%
+  group_by(LABEL, YEAR) %>%
+  summarize(sum = sum(COUNT_PDO))
+df %>%
+  group_by(LABEL, YEAR) %>%
+  summarize(sum = sum(COUNT_INJ))
+df %>%
+  group_by(LABEL, YEAR) %>%
+  summarize(sum = sum(COUNT_TOT))
 
 # skid summary
-df %>% 
-  group_by(LABEL) %>% 
+df %>%
+  group_by(LABEL) %>%
   summarize(mean = mean(SN), min = min(SN), max = max(SN))
-df %>% 
-  group_by(LABEL, YEAR) %>% 
+df %>%
+  group_by(LABEL, YEAR) %>%
   summarize(mean = mean(SN), min = min(SN), max = max(SN))
 
 # count of segments
 df %>%
-  group_by(LABEL) %>% 
+  group_by(LABEL) %>%
   summarize(n())
 
 # segment length
-df %>% 
-  group_by(LABEL) %>% 
+df %>%
+  group_by(LABEL) %>%
   summarize(mean = mean(LENGTH), min = min(LENGTH), max = max(LENGTH))
 
-# total length 
-df %>% 
-  group_by(LABEL) %>% 
+# total length
+df %>%
+  group_by(LABEL) %>%
   summarize(max = max(END))
 
 # export prepared data
