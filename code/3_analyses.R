@@ -174,7 +174,7 @@ non_dry <- glm.nb(COUNT_DRY ~ SN + log(AADT) + offset(log(LENGTH)),
   data = df_89
 )
 sink("./outputs/models/17.non_dry.txt")
-print(summary(int_dry))
+print(summary(non_dry))
 
 # wet crashes
 non_wet <- glm.nb(COUNT_WET ~ SN + log(AADT) + offset(log(LENGTH)),
