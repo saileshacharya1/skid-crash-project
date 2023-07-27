@@ -114,14 +114,18 @@ plot <- ggplot(crash, aes(x = YEAR, y = count, fill = crash_type)) +
                                "Property damage only" = "orange", 
                                "Injury-related" = "red", 
                                "All-type" = "gray")) +
+  scale_x_continuous(breaks = c(2016, 2017, 2018, 2019), expand = c(0.01, 0.01)) +
   theme_minimal() +
   theme(
-    text = element_text(family = "Times New Roman", size = 11),
+    text = element_text(family = "Times New Roman", size = 10),
+    strip.text = element_text(face = "bold"),
     strip.placement = "outside",
     legend.position = "top",
-    legend.direction = "horizontal"
-  ) +
-  scale_x_continuous(breaks = c(2016, 2017, 2018, 2019))
+    legend.direction = "horizontal",
+    panel.border = element_rect(color = "black", fill = NA, size = 1),
+    panel.grid.minor.y = element_blank(),
+    panel.grid.major.x = element_blank(),
+  ) 
 
 # save the plot
 ggsave(
