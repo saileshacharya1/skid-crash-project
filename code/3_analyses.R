@@ -284,7 +284,7 @@ cmf <- ggplot(cmf, aes(col = crash_type)) +
 # save the plot
 ggsave(
   filename = "./outputs/plots/1.cmf.jpeg",
-  plot = cmf, width = 6.5, height = 8.5, unit = "in", dpi = 1000
+  plot = cmf, width = 6.5, height = 8.5, unit = "in", dpi = 2000
 )
 
 #------------------------------------------------------------------------------#
@@ -368,7 +368,7 @@ cmf_int <- ggplot(cmf_int, aes(col = crash_type)) +
 # save the plot
 ggsave(
   filename = "./outputs/plots/2.cmf_interstates.jpeg",
-  plot = cmf_int, width = 6.5, height = 8.5, unit = "in", dpi = 1000
+  plot = cmf_int, width = 6.5, height = 8.5, unit = "in", dpi = 2000
 )
 
 #------------------------------------------------------------------------------#
@@ -452,7 +452,7 @@ cmf_non <- ggplot(cmf_non, aes(col = crash_type)) +
 # save the plot
 ggsave(
   filename = "./outputs/plots/3.cmf_non_interstates.jpeg",
-  plot = cmf_non, width = 6.5, height = 8.5, unit = "in", dpi = 1000
+  plot = cmf_non, width = 6.5, height = 8.5, unit = "in", dpi = 2000
 )
 
 #------------------------------------------------------------------------------#

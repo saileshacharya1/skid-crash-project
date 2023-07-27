@@ -135,7 +135,7 @@ plot <- ggplot(crash, aes(x = YEAR, y = count, fill = crash_type)) +
 # save the plot
 ggsave(
   filename = "./outputs/plots/4.crash_statistics.jpeg",
-  plot = plot, width = 6.5, height = 6.5, unit = "in", dpi = 1000
+  plot = plot, width = 6.5, height = 6.5, unit = "in", dpi = 2000
 )
 
 #------------------------------------------------------------------------------#
