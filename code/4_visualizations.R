@@ -108,24 +108,29 @@ plot <- ggplot(crash, aes(x = YEAR, y = count, fill = crash_type)) +
     stat = "identity", width = 0.7
   ) +
   facet_wrap(~LABEL, ncol = 1, scales = "free_x", strip.position = "bottom") +
-  labs(x = "", y = "Count", fill = "Crash type:") +
-  scale_fill_manual(values = c("Dry" = "blue", 
-                               "Wet" = "green", 
-                               "Property damage only" = "orange", 
-                               "Injury-related" = "red", 
-                               "All-type" = "gray")) +
-  scale_x_continuous(breaks = c(2016, 2017, 2018, 2019), expand = c(0.01, 0.01)) +
+  labs(x = "", y = "# of crashes", fill = "Crash type:") +
+  scale_fill_manual(values = c(
+    "Dry" = "blue",
+    "Wet" = "green",
+    "Property damage only" = "orange",
+    "Injury-related" = "red",
+    "All-type" = "gray"
+  )) +
+  scale_x_continuous(
+    breaks = c(2016, 2017, 2018, 2019),
+    expand = c(0.01, 0.01)
+  ) +
   theme_minimal() +
   theme(
     text = element_text(family = "Times New Roman", size = 10),
-    strip.text = element_text(face = "bold"),
+    strip.text = element_text(face = "bold", size = 12),
     strip.placement = "outside",
     legend.position = "top",
     legend.direction = "horizontal",
     panel.border = element_rect(color = "black", fill = NA, size = 1),
     panel.grid.minor.y = element_blank(),
     panel.grid.major.x = element_blank(),
-  ) 
+  )
 
 # save the plot
 ggsave(

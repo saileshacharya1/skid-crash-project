@@ -229,45 +229,62 @@ cmf <- cmf %>% rename("crash_type" = "cmf", "cmf" = "value")
 # plot
 cmf <- ggplot(cmf, aes(col = crash_type)) +
   geom_line(aes(test_SN, cmf), size = 1.1) +
-  scale_color_manual(values = c("dry" = "blue", 
-                                "wet" = "green", 
-                                "pdo" = "orange", 
-                                "inj" = "red", 
-                                "tot" = "gray"),
-                     labels = c("Dry" = "Dry", 
-                                "Wet" = "Wet", 
-                                "pdo" = "Property damage only", 
-                                "inj" = "Injury-related", 
-                                "tot" = "All-type")) +
+  scale_color_manual(
+    values = c(
+      "dry" = "blue",
+      "wet" = "green",
+      "pdo" = "orange",
+      "inj" = "red",
+      "tot" = "gray"
+    ),
+    labels = c(
+      "Dry" = "Dry",
+      "Wet" = "Wet",
+      "pdo" = "Property damage only",
+      "inj" = "Injury-related",
+      "tot" = "All-type"
+    )
+  ) +
   xlab("SN (base = 40)") +
   ylab("CMF") +
-  labs( col = "Crash type:") +
-  ggtitle("Interstate + Non-interstate Combined") +
-  scale_x_continuous(limits = c(0, 100), 
-                      breaks = seq(0, 100, 10), 
-                      expand = c(0, 0)) +
-  scale_y_continuous(limits = c(0.2, 2.8), 
-                     breaks = seq(0.2, 2.8, 0.2), 
-                     expand = c(0, 0)) +
+  labs(col = "Crash type:") +
+  scale_x_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, 10),
+    expand = c(0, 0)
+  ) +
+  scale_y_continuous(
+    limits = c(0.2, 2.8),
+    breaks = seq(0.2, 2.8, 0.2),
+    expand = c(0, 0)
+  ) +
   theme(
     panel.border = element_rect(colour = "black", fill = NA, size = 0.5),
     panel.background = element_rect(fill = "white"),
     plot.background = element_rect(fill = "white"),
     panel.grid.major = element_line(colour = "grey90"),
     panel.grid.minor = element_blank(),
-    legend.position = c(0.95, 0.95),
+    legend.position = c(0.99, 0.99),
     legend.justification = c(1, 1),
     legend.box.background = element_rect(colour = "black"),
     legend.key = element_blank(),
     plot.margin = unit(c(1, 1, 1, 2), "lines"),
     axis.ticks = element_blank(),
-    plot.title = element_text(face = "bold"),
-  )
+    plot.caption = element_text(
+      margin = margin(t = 15),
+      hjust = 0.5,
+      face = "bold",
+      size = 12
+    ),
+    text = element_text(family = "Times New Roman", size = 10)
+  ) +
+  labs(caption = "(c) Interstate + Non-interstate combined")
+
 
 # save the plot
 ggsave(
   filename = "./outputs/plots/1.cmf.jpeg",
-  plot = cmf1, width = 6.5, height = 8.5, unit = "in", dpi = 1000
+  plot = cmf, width = 6.5, height = 8.5, unit = "in", dpi = 1000
 )
 
 #------------------------------------------------------------------------------#
@@ -297,40 +314,56 @@ cmf_int <- cmf_int %>% rename("crash_type" = "cmf", "cmf" = "value")
 # plot
 cmf_int <- ggplot(cmf_int, aes(col = crash_type)) +
   geom_line(aes(test_SN, cmf), size = 1.1) +
-  scale_color_manual(values = c("dry" = "blue", 
-                                "wet" = "green", 
-                                "pdo" = "orange", 
-                                "inj" = "red", 
-                                "tot" = "gray"),
-                     labels = c("Dry" = "Dry", 
-                                "Wet" = "Wet", 
-                                "pdo" = "Property damage only", 
-                                "inj" = "Injury-related", 
-                                "tot" = "All-type")) +
+  scale_color_manual(
+    values = c(
+      "dry" = "blue",
+      "wet" = "green",
+      "pdo" = "orange",
+      "inj" = "red",
+      "tot" = "gray"
+    ),
+    labels = c(
+      "Dry" = "Dry",
+      "Wet" = "Wet",
+      "pdo" = "Property damage only",
+      "inj" = "Injury-related",
+      "tot" = "All-type"
+    )
+  ) +
   xlab("SN (base = 40)") +
   ylab("CMF") +
-  labs( col = "Crash type:") +
-  ggtitle("Interstate") +
-  scale_x_continuous(limits = c(0, 100), 
-                      breaks = seq(0, 100, 10), 
-                      expand = c(0, 0)) +
-  scale_y_continuous(limits = c(0.2, 2.8), 
-                     breaks = seq(0.2, 2.8, 0.2), 
-                     expand = c(0, 0)) +
+  labs(col = "Crash type:") +
+  scale_x_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, 10),
+    expand = c(0, 0)
+  ) +
+  scale_y_continuous(
+    limits = c(0.2, 2.8),
+    breaks = seq(0.2, 2.8, 0.2),
+    expand = c(0, 0)
+  ) +
   theme(
     panel.border = element_rect(colour = "black", fill = NA, size = 0.5),
     panel.background = element_rect(fill = "white"),
     plot.background = element_rect(fill = "white"),
     panel.grid.major = element_line(colour = "grey90"),
     panel.grid.minor = element_blank(),
-    legend.position = c(0.95, 0.95),
+    legend.position = c(0.99, 0.99),
     legend.justification = c(1, 1),
     legend.box.background = element_rect(colour = "black"),
     legend.key = element_blank(),
     plot.margin = unit(c(1, 1, 1, 2), "lines"),
     axis.ticks = element_blank(),
-    plot.title = element_text(face = "bold"),
-  )
+    plot.caption = element_text(
+      margin = margin(t = 15),
+      hjust = 0.5,
+      face = "bold",
+      size = 12
+    ),
+    text = element_text(family = "Times New Roman", size = 10)
+  ) +
+  labs(caption = "(a) Interstate")
 
 # save the plot
 ggsave(
@@ -365,40 +398,56 @@ cmf_non <- cmf_non %>% rename("crash_type" = "cmf", "cmf" = "value")
 # plot
 cmf_non <- ggplot(cmf_non, aes(col = crash_type)) +
   geom_line(aes(test_SN, cmf), size = 1.1) +
-  scale_color_manual(values = c("dry" = "blue", 
-                                "wet" = "green", 
-                                "pdo" = "orange", 
-                                "inj" = "red", 
-                                "tot" = "gray"),
-                     labels = c("Dry" = "Dry", 
-                                "Wet" = "Wet", 
-                                "pdo" = "Property damage only", 
-                                "inj" = "Injury-related", 
-                                "tot" = "All-type")) +
+  scale_color_manual(
+    values = c(
+      "dry" = "blue",
+      "wet" = "green",
+      "pdo" = "orange",
+      "inj" = "red",
+      "tot" = "gray"
+    ),
+    labels = c(
+      "Dry" = "Dry",
+      "Wet" = "Wet",
+      "pdo" = "Property damage only",
+      "inj" = "Injury-related",
+      "tot" = "All-type"
+    )
+  ) +
   xlab("SN (base = 40)") +
   ylab("CMF") +
-  labs( col = "Crash type:") +
-  ggtitle("Non-interstate") +
-  scale_x_continuous(limits = c(0, 100), 
-                      breaks = seq(0, 100, 10), 
-                      expand = c(0, 0)) +
-  scale_y_continuous(limits = c(0.2, 2.8), 
-                     breaks = seq(0.2, 2.8, 0.2), 
-                     expand = c(0, 0)) +
+  labs(col = "Crash type:") +
+  scale_x_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, 10),
+    expand = c(0, 0)
+  ) +
+  scale_y_continuous(
+    limits = c(0.2, 2.8),
+    breaks = seq(0.2, 2.8, 0.2),
+    expand = c(0, 0)
+  ) +
   theme(
     panel.border = element_rect(colour = "black", fill = NA, size = 0.5),
     panel.background = element_rect(fill = "white"),
     plot.background = element_rect(fill = "white"),
     panel.grid.major = element_line(colour = "grey90"),
     panel.grid.minor = element_blank(),
-    legend.position = c(0.95, 0.95),
+    legend.position = c(0.99, 0.99),
     legend.justification = c(1, 1),
     legend.box.background = element_rect(colour = "black"),
     legend.key = element_blank(),
     plot.margin = unit(c(1, 1, 1, 2), "lines"),
     axis.ticks = element_blank(),
-    plot.title = element_text(face = "bold"),
-  )
+    plot.caption = element_text(
+      margin = margin(t = 15),
+      hjust = 0.5,
+      face = "bold",
+      size = 12
+    ),
+    text = element_text(family = "Times New Roman", size = 10)
+  ) +
+  labs(caption = "(b) Non-interstate")
 
 # save the plot
 ggsave(
