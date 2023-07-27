@@ -28,3 +28,8 @@ Number of Fisher Scoring iterations: 1
           Std. Err.:  0.0870 
 
  2 x log-likelihood:  -8510.0480 
+[1] "Number of obs. = 3972"
+[1] "AIC = 8518"
+[1] "BIC = 8543"
+[1] "null log-likelihood = -8974"
+[1] "final log-likelihood = -4255"

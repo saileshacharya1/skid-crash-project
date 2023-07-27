@@ -119,39 +119,79 @@ closeAllConnections()
 df_15 <- df[df$LABEL == "0015N" | df$LABEL == "0015P", ]
 
 # total crashes
+int_tot_null <- glm.nb(COUNT_TOT ~ 1,
+  data = df_15
+)
 int_tot <- glm.nb(COUNT_TOT ~ SN + log(AADT) + offset(log(LENGTH)),
   data = df_15
 )
 sink("./outputs/models/11.int_tot.txt")
 print(summary(int_tot))
+print(paste("Number of obs. =", nrow(df_15)))
+print(paste("AIC =", round(AIC(int_tot), 0)))
+print(paste("BIC =", round(BIC(int_tot), 0)))
+print(paste("null log-likelihood =", round(logLik(int_tot_null), 0)))
+print(paste("final log-likelihood =", round(logLik(int_tot), 0)))
 
 # dry crashes
+int_dry_null <- glm.nb(COUNT_TOT ~ 1,
+  data = df_15
+)
 int_dry <- glm.nb(COUNT_DRY ~ SN + log(AADT) + offset(log(LENGTH)),
   data = df_15
 )
 sink("./outputs/models/12.int_dry.txt")
 print(summary(int_dry))
+print(paste("Number of obs. =", nrow(df_15)))
+print(paste("AIC =", round(AIC(int_dry), 0)))
+print(paste("BIC =", round(BIC(int_dry), 0)))
+print(paste("null log-likelihood =", round(logLik(int_dry_null), 0)))
+print(paste("final log-likelihood =", round(logLik(int_dry), 0)))
 
 # wet crashes
+int_wet_null <- glm.nb(COUNT_TOT ~ 1,
+  data = df_15
+)
 int_wet <- glm.nb(COUNT_WET ~ SN + log(AADT) + offset(log(LENGTH)),
   data = df_15
 )
 sink("./outputs/models/13.int_wet.txt")
 print(summary(int_wet))
+print(paste("Number of obs. =", nrow(df_15)))
+print(paste("AIC =", round(AIC(int_wet), 0)))
+print(paste("BIC =", round(BIC(int_wet), 0)))
+print(paste("null log-likelihood =", round(logLik(int_wet_null), 0)))
+print(paste("final log-likelihood =", round(logLik(int_wet), 0)))
 
 # PDO crashes
+int_pdo_null <- glm.nb(COUNT_TOT ~ 1,
+  data = df_15
+)
 int_pdo <- glm.nb(COUNT_PDO ~ SN + log(AADT) + offset(log(LENGTH)),
   data = df_15
 )
 sink("./outputs/models/14.int_pdo.txt")
 print(summary(int_pdo))
+print(paste("Number of obs. =", nrow(df_15)))
+print(paste("AIC =", round(AIC(int_pdo), 0)))
+print(paste("BIC =", round(BIC(int_pdo), 0)))
+print(paste("null log-likelihood =", round(logLik(int_pdo_null), 0)))
+print(paste("final log-likelihood =", round(logLik(int_pdo), 0)))
 
 # injury-related/fatal crashes
+int_inj_null <- glm.nb(COUNT_TOT ~ 1,
+  data = df_15
+)
 int_inj <- glm.nb(COUNT_INJ ~ SN + log(AADT) + offset(log(LENGTH)),
   data = df_15
 )
 sink("./outputs/models/15.int_inj.txt")
 print(summary(int_inj))
+print(paste("Number of obs. =", nrow(df_15)))
+print(paste("AIC =", round(AIC(int_inj), 0)))
+print(paste("BIC =", round(BIC(int_inj), 0)))
+print(paste("null log-likelihood =", round(logLik(int_inj_null), 0)))
+print(paste("final log-likelihood =", round(logLik(int_inj), 0)))
 closeAllConnections()
 
 #------------------------------------------------------------------------------#
@@ -166,41 +206,100 @@ closeAllConnections()
 df_89 <- df[df$LABEL == "0089", ]
 
 # total crashes
+non_tot_null <- glm.nb(COUNT_TOT ~ 1,
+  data = df_89
+)
 non_tot <- glm.nb(COUNT_TOT ~ SN + log(AADT) + offset(log(LENGTH)),
   data = df_89
 )
 sink("./outputs/models/16.non_tot.txt")
 print(summary(non_tot))
+print(paste("Number of obs. =", nrow(df_89)))
+print(paste("AIC =", round(AIC(non_tot), 0)))
+print(paste("BIC =", round(BIC(non_tot), 0)))
+print(paste("null log-likelihood =", round(logLik(non_tot_null), 0)))
+print(paste("final log-likelihood =", round(logLik(non_tot), 0)))
 
 # dry crashes
+non_dry_null <- glm.nb(COUNT_TOT ~ 1,
+  data = df_89
+)
 non_dry <- glm.nb(COUNT_DRY ~ SN + log(AADT) + offset(log(LENGTH)),
   data = df_89
 )
 sink("./outputs/models/17.non_dry.txt")
 print(summary(non_dry))
+print(paste("Number of obs. =", nrow(df_89)))
+print(paste("AIC =", round(AIC(non_dry), 0)))
+print(paste("BIC =", round(BIC(non_dry), 0)))
+print(paste("null log-likelihood =", round(logLik(non_dry_null), 0)))
+print(paste("final log-likelihood =", round(logLik(non_dry), 0)))
+
 
 # wet crashes
+non_wet_null <- glm.nb(COUNT_TOT ~ 1,
+  data = df_89
+)
 non_wet <- glm.nb(COUNT_WET ~ SN + log(AADT) + offset(log(LENGTH)),
   data = df_89
 )
 sink("./outputs/models/18.non_wet.txt")
 print(summary(non_wet))
+print(paste("Number of obs. =", nrow(df_89)))
+print(paste("AIC =", round(AIC(non_wet), 0)))
+print(paste("BIC =", round(BIC(non_wet), 0)))
+print(paste("null log-likelihood =", round(logLik(non_wet_null), 0)))
+print(paste("final log-likelihood =", round(logLik(non_wet), 0)))
+
 
 # PDO crashes
+non_pdo_null <- glm.nb(COUNT_TOT ~ 1,
+  data = df_89
+)
 non_pdo <- glm.nb(COUNT_PDO ~ SN + log(AADT) + offset(log(LENGTH)),
   data = df_89
 )
 sink("./outputs/models/19.non_pdo.txt")
 print(summary(non_pdo))
+print(paste("Number of obs. =", nrow(df_89)))
+print(paste("AIC =", round(AIC(non_pdo), 0)))
+print(paste("BIC =", round(BIC(non_pdo), 0)))
+print(paste("null log-likelihood =", round(logLik(non_pdo_null), 0)))
+print(paste("final log-likelihood =", round(logLik(non_pdo), 0)))
+
 
 # injury-related/fatal crashes
+non_inj_null <- glm.nb(COUNT_TOT ~ 1,
+  data = df_89
+)
 non_inj <- glm.nb(COUNT_INJ ~ SN + log(AADT) + offset(log(LENGTH)),
   data = df_89
 )
 sink("./outputs/models/20.non_inj.txt")
 print(summary(non_inj))
+print(paste("Number of obs. =", nrow(df_89)))
+print(paste("AIC =", round(AIC(non_inj), 0)))
+print(paste("BIC =", round(BIC(non_inj), 0)))
+print(paste("null log-likelihood =", round(logLik(non_inj_null), 0)))
+print(paste("final log-likelihood =", round(logLik(non_inj), 0)))
 closeAllConnections()
 
+#------------------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
+
+
+### Summary of models ##########################################################
+################################################################################
+
+# null model for total crashes - interstate
+int_tot <- glm.nb(COUNT_TOT ~ SN + log(AADT) + offset(log(LENGTH)),
+  data = df_15
+)
+
+print(summary(int_tot))
+AIC(int_tot)
+BIC(int_tot)
+logLik(int_tot)
 #------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------#
 
